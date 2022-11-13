@@ -1,0 +1,4 @@
+paho-mqtt
+aiohttp
+asyncio
+certifi
