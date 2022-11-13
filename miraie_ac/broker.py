@@ -27,9 +27,10 @@ class MirAIeBroker:
         # parsed = json.loads(msg.payload.decode("utf-8"))
         # print(json.dumps(parsed, indent=4))
 
-    def on_disconnect(self, client, userdata, rc):
+    def on_disconnect(self, client: mqtt.Client, userdata, rc):
         if rc != 0:
             print("Unexpected disconnection.")
+            client.reconnect()
 
     def on_log(self, client, userdata, level, buf):
         print("log: ", buf)

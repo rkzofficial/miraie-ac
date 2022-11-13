@@ -4,7 +4,7 @@ from setuptools import setup
 # This call to setup() does all the work
 setup(
     name="miraie-ac",
-    version="0.1.0",
+    version="0.2.1",
     description="MirAIe-AC API for Python",
     long_description="MirAIe-AC API for Python",
     long_description_content_type="text/markdown",
