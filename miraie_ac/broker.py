@@ -62,6 +62,7 @@ class MirAIeBroker:
 
         # Start network loop
         self.client = client
+        self.client.loop_start()
 
     def build_base_payload(self):
         return {

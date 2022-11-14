@@ -1,0 +1,7 @@
+// Turn of AC displaye
+{
+    "acdc": "on", //on or off
+    "ki": 8,
+    "cnt": "an",
+    "sid": "60"
+}

@@ -1,0 +1,6 @@
+{
+    "actmp": "24.0", // Temperature in Celsius 16 - 30
+    "ki": 2,
+    "cnt": "an",
+    "sid": "7"
+}

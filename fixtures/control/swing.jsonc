@@ -1,0 +1,7 @@
+// Vertical swing 
+{
+    "acvs": 1, // 0 for auto , 1, 2, 3, 4, 5
+    "ki": 5,
+    "cnt": "an",
+    "sid": "74"
+}

@@ -1,0 +1,6 @@
+{
+    "acmd": "auto", // auto, dry, fan, cool
+    "ki": 0,
+    "cnt": "an",
+    "sid": "14"
+}

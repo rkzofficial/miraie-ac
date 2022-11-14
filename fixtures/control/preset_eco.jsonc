@@ -1,0 +1,7 @@
+// Eco mode (while turning on eco mode also change the temparatur to 26 degree celsius)
+{
+    "acem": "on",
+    "ki": 10,
+    "cnt": "an",
+    "sid": "45"
+}
