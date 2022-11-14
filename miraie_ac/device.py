@@ -121,10 +121,10 @@ class Device:
         self.status = status
 
     def turn_on(self):
-        self.broker.turn_on(self.control_topic)
+        self.broker.set_power(self.control_topic, PowerMode.ON)
 
     def turn_off(self):
-        self.broker.turn_off(self.control_topic)
+        self.broker.set_power(self.control_topic, PowerMode.OFF)
 
     def set_temperature(self, temperature: float):
         self.broker.set_temperature(self.control_topic, temperature)

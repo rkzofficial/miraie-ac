@@ -81,7 +81,7 @@ class MirAIeBroker:
     # Power
     def build_power_payload(self, power: PowerMode):
         payload = self.build_base_payload()
-        payload["ps"] = str(power)
+        payload["ps"] = str(power.value)
         return payload
 
     def set_power(self, topic: str, power: PowerMode):
@@ -101,7 +101,7 @@ class MirAIeBroker:
     # HVAC Mode
     def build_hvac_mode_payload(self, mode: HVACMode):
         payload = self.build_base_payload()
-        payload["acmd"] = str(mode)
+        payload["acmd"] = str(mode.value)
         return payload
 
     def set_hvac_mode(self, topic: str, mode: HVACMode):
@@ -110,7 +110,7 @@ class MirAIeBroker:
     # Fan Mode
     def build_fan_mode_payload(self, mode: FanMode):
         payload = self.build_base_payload()
-        payload["acfs"] = str(mode)
+        payload["acfs"] = str(mode.value)
         return payload
 
     def set_fan_mode(self, topic: str, mode: FanMode):
@@ -138,7 +138,7 @@ class MirAIeBroker:
     # Swing Mode
     def build_swing_mode_payload(self, mode: SwingMode):
         payload = self.build_base_payload()
-        payload["acvs"] = str(mode)
+        payload["acvs"] = mode.value
         return payload
 
     def set_swing_mode(self, topic: str, mode: SwingMode):

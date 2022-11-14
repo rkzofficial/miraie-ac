@@ -144,7 +144,9 @@ class MirAIeHub:
             constants.statusUrl.replace("{deviceId}", device_id),
             headers=self.__build_headers__(),
         )
-        return await response.json()
+        resp = await response.json()
+        resp["deviceId"] = device_id
+        return resp
 
     # Get all device status
     async def get_all_device_status(self):
@@ -153,28 +155,38 @@ class MirAIeHub:
             return_exceptions=True,
         )
 
-        for index in range(0, len(statuses)):
-            device = self.home.devices[index]
-            status = statuses[index]
+        for status in statuses:
+            device = next(d for d in self.home.devices if d.id == status["deviceId"])
 
+            status_obj: DeviceStatus
             if "ty" not in status:
-                continue
-
-            status_obj = DeviceStatus(
-                is_online=status["onlineStatus"] == "true",
-                temperature=float(status["actmp"]),
-                room_temperature=float(status["rmtmp"]),
-                power_mode=PowerMode(status["ps"]),
-                fan_mode=FanMode(status["acfs"]),
-                swing_mode=SwingMode(status["acvs"]),
-                display_mode=DisplayMode(status["acdc"]),
-                hvac_mode=HVACMode(status["acmd"]),
-                preset_mode=PresetMode.BOOST
-                if status["acpm"] == "on"
-                else PresetMode.ECO
-                if status["acem"] == "on"
-                else PresetMode.NONE,
-            )
+                status_obj = DeviceStatus(
+                    is_online=False,
+                    temperature=24.0,
+                    room_temperature=24.0,
+                    power_mode=PowerMode.OFF,
+                    fan_mode=FanMode.AUTO,
+                    swing_mode=SwingMode.AUTO,
+                    display_mode=DisplayMode.ON,
+                    hvac_mode=HVACMode.AUTO,
+                    preset_mode=PresetMode.NONE,
+                )
+            else:
+                status_obj = DeviceStatus(
+                    is_online=status["onlineStatus"] == "true",
+                    temperature=float(status["actmp"]),
+                    room_temperature=float(status["rmtmp"]),
+                    power_mode=PowerMode(status["ps"]),
+                    fan_mode=FanMode(status["acfs"]),
+                    swing_mode=SwingMode(status["acvs"]),
+                    display_mode=DisplayMode(status["acdc"]),
+                    hvac_mode=HVACMode(status["acmd"]),
+                    preset_mode=PresetMode.BOOST
+                    if status["acpm"] == "on"
+                    else PresetMode.ECO
+                    if status["acem"] == "on"
+                    else PresetMode.NONE,
+                )
 
             device.set_status(status_obj)
 
