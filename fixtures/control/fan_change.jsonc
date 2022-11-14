@@ -1,0 +1,6 @@
+{
+    "acfs": "quiet", // low, medium, high, auto, quiet
+    "ki": 0,
+    "cnt": "an",
+    "sid": "14"
+}
