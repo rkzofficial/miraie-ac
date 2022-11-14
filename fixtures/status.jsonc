@@ -1,0 +1,34 @@
+{
+    "ty": "AC",
+    "achs": 0,
+    "acngs": "off",
+    "acec": "off",
+    "acfc": "off",
+    "acdl": 0,
+    "acms": "off",
+    "acgm": 0,
+    "acmss": 0,
+    "acpms": 0,
+    "acng": "off",
+    "mo": "102184",
+    "V": "1.75",
+    "actm": [
+        -1,
+        -1
+    ],
+    "acpm": "off", // on or off
+    "acem": "off", // on or off
+    "acmd": "auto", // dry, fan, auto, cool
+    "acdc": "on", // on or off
+    "acvs": 1, // 0, 1, 2, 3, 4, 5
+    "acsp": "none",
+    "actmp": "25.0", // 16.0 - 30.0
+    "acfs": "quiet", // low, medium, high, auto, quiet
+    "rmtmp": "27.5",
+    "ts": "1668418256",
+    "ps": "off", // on or off
+    "sid": "14",
+    "cnt": "an", // an or rem
+    "lcmd": "ps", // ps, acmd, acfs, actmp, rmtmp, acpm, acem, acdc, acvs, acsp
+    "rssi": -54
+}
