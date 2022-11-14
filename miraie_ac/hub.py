@@ -5,7 +5,8 @@ from .broker import MirAIeBroker
 from .user import User
 from .topic import MirAIeTopic
 from .home import Home
-from .device import Device, DeviceDetails
+from .device import Device, DeviceDetails, DeviceStatus
+from .enums import *
 
 
 class MirAIeHub:
@@ -30,6 +31,7 @@ class MirAIeHub:
 
         await self._authenticate(mobile, password)
         await self._get_home_details()
+        await self.get_all_device_status()
         self._init_broker(broker)
 
     def _init_broker(self, broker: MirAIeBroker):
@@ -146,8 +148,34 @@ class MirAIeHub:
 
     # Get all device status
     async def get_all_device_status(self):
-        results = await asyncio.gather(
+        statuses = await asyncio.gather(
             *[self._get_device_status(device.id) for device in self.home.devices],
             return_exceptions=True,
         )
-        return results
+
+        for index in range(0, len(statuses)):
+            device = self.home.devices[index]
+            status = statuses[index]
+
+            if "ty" not in status:
+                continue
+
+            status_obj = DeviceStatus(
+                is_online=status["onlineStatus"] == "true",
+                temperature=float(status["actmp"]),
+                room_temperature=float(status["rmtmp"]),
+                power_mode=PowerMode(status["ps"]),
+                fan_mode=FanMode(status["acfs"]),
+                swing_mode=SwingMode(status["acvs"]),
+                display_mode=DisplayMode(status["acdc"]),
+                hvac_mode=HVACMode(status["acmd"]),
+                preset_mode=PresetMode.BOOST
+                if status["acpm"] == "on"
+                else PresetMode.ECO
+                if status["acem"] == "on"
+                else PresetMode.NONE,
+            )
+
+            device.set_status(status_obj)
+
+        return statuses
