@@ -76,7 +76,6 @@ class MirAIeBroker:
 
         # Connect to MQTT broker
         client.connect(self.host, self.port, 60)
-        client.disconnect()
 
         # Start network loop
         self.client = client
