@@ -3,6 +3,15 @@ from .broker import MirAIeBroker
 from .enums import *
 
 
+def toFloat(value: str) -> float:
+    if value is None:
+        return -1.0
+    try:
+        return float(value)
+    except:
+        return -1.0
+
+
 class DeviceStatus:
     def __init__(
         self,
@@ -93,8 +102,8 @@ class Device:
     def status_handler(self, status: any):
         status_obj = DeviceStatus(
             is_online=self.status.is_online,
-            temperature=float(status["actmp"]),
-            room_temperature=float(status["rmtmp"]),
+            temperature=toFloat(status["actmp"]),
+            room_temperature=toFloat(status["rmtmp"]),
             power_mode=PowerMode(status["ps"]),
             fan_mode=FanMode(status["acfs"]),
             swing_mode=SwingMode(status["acvs"]),

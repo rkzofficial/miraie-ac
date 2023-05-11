@@ -37,7 +37,7 @@ class MirAIeHub:
     def _init_broker(self, broker: MirAIeBroker):
         topics = self.get_device_topics()
         broker.set_topics(topics)
-        broker.connect(self.home.id, self.user.access_token)
+        broker.connect(self.home.id, self.user.access_token, self.on_get_token)
 
     @property
     def broker(self):
@@ -52,6 +52,10 @@ class MirAIeHub:
         )
         miraie_topics = [topic for topics in device_topics for topic in topics]
         return miraie_topics
+
+    async def on_get_token(self, cb):
+        await self._authenticate(self.username, self.password)
+        cb(self.home.id, self.user.access_token)
 
     # Authenticate with the MirAIe API
     async def _authenticate(self, mobile: str, password: str):
@@ -72,6 +76,8 @@ class MirAIeHub:
                 user_id=json["userId"],
                 expires_in=json["expiresIn"],
             )
+            self.username = mobile
+            self.password = password
             return True
 
         raise Exception("Authentication failed")

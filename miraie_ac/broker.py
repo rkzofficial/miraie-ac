@@ -1,9 +1,11 @@
 from paho.mqtt import client as mqtt
+import asyncio
 import ssl
 import certifi
 import random
 import json
 from .enums import *
+from .user import User
 
 
 class MirAIeBroker:
@@ -36,13 +38,21 @@ class MirAIeBroker:
         func(parsed)
 
     def on_disconnect(self, client: mqtt.Client, userdata, rc):
+        def cb(username: str, access_token: User):
+            self.client.username_pw_set(username, access_token)
+            self.client.reconnect()
+
         if rc != 0:
-            client.reconnect()
+            asyncio.create_task(self.on_get_token(cb))
 
     def on_log(self, client, userdata, level, buf):
         print("log: ", buf)
 
-    def connect(self, username: str, password: str):
+    def connect(self, username: str, access_token: User, on_get_token):
+
+        # Set on_token_expire callback
+        self.on_get_token = on_get_token
+
         # Create MQTT client
         client = mqtt.Client(
             self.client_id,
@@ -50,7 +60,7 @@ class MirAIeBroker:
         )
 
         # Set username and password
-        client.username_pw_set(username, password)
+        client.username_pw_set(username, access_token)
 
         if self.use_ssl:
             # Create ssl context with TLSv1
@@ -66,6 +76,7 @@ class MirAIeBroker:
 
         # Connect to MQTT broker
         client.connect(self.host, self.port, 60)
+        client.disconnect()
 
         # Start network loop
         self.client = client
