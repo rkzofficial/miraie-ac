@@ -1,4 +1,4 @@
-from paho.mqtt import client as mqtt
+from asyncio_paho import AsyncioPahoClient as MQTTClient
 import asyncio
 import ssl
 import certifi
@@ -26,18 +26,20 @@ class MirAIeBroker:
     def set_topics(self, topics: list[str]):
         self.commandTopics = topics
 
-    def on_connect(self, client: mqtt.Client, userdata, flags, rc):
+    async def on_connect(self, client: MQTTClient, userdata, flags, rc):
         # Subscribe to all command topics
         for topic in self.commandTopics:
-            client.subscribe(topic)
+            print("Subscribing to topic: ", topic)
+            await client.asyncio_subscribe(topic)
 
-    def on_message(self, client: mqtt.Client, userdata, msg):
+    async def on_message(self, client: MQTTClient, userdata, msg):
+        print("Received message: ", msg.topic, msg.payload)
         parsed = json.loads(msg.payload.decode("utf-8"))
 
         func = self.status_callbacks.get(msg.topic)
         func(parsed)
 
-    def on_disconnect(self, client: mqtt.Client, userdata, rc):
+    def on_disconnect(self, client: MQTTClient, userdata, rc):
         def cb(username: str, access_token: User):
             self.client.username_pw_set(username, access_token)
             self.client.reconnect()
@@ -48,38 +50,28 @@ class MirAIeBroker:
     def on_log(self, client, userdata, level, buf):
         print("log: ", buf)
 
-    def connect(self, username: str, access_token: User, on_get_token):
-
+    async def connect(self, username: str, access_token: User, on_get_token):
         # Set on_token_expire callback
         self.on_get_token = on_get_token
 
         # Create MQTT client
-        client = mqtt.Client(
-            self.client_id,
-            True,
-        )
+        async with MQTTClient(self.client_id, True) as client:
+            # Set username and password
+            client.username_pw_set(username, access_token)
 
-        # Set username and password
-        client.username_pw_set(username, access_token)
+            if self.use_ssl:
+                # Create ssl context with TLSv1
+                context = ssl.create_default_context(cafile=certifi.where())
+                client.tls_set_context(context)
+                client.tls_insecure_set(True)
 
-        if self.use_ssl:
-            # Create ssl context with TLSv1
-            context = ssl.create_default_context(cafile=certifi.where())
-            client.tls_set_context(context)
-            client.tls_insecure_set(True)
+            # Set callbacks
+            client.asyncio_listeners.add_on_connect(self.on_connect)
+            client.asyncio_listeners.add_on_message(self.on_message)
 
-        # Set callbacks
-        client.on_connect = self.on_connect
-        client.on_message = self.on_message
-        client.on_disconnect = self.on_disconnect
-        # client.on_log = self.on_log
+            await client.asyncio_connect(self.host, self.port, 60)
 
-        # Connect to MQTT broker
-        client.connect(self.host, self.port, 60)
-
-        # Start network loop
-        self.client = client
-        self.client.loop_start()
+            print("Connected to MQTT broker")
 
     def build_base_payload(self):
         return {

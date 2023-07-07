@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+
 from . import constants
 from .broker import MirAIeBroker
 from .user import User
@@ -7,15 +8,7 @@ from .topic import MirAIeTopic
 from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
 from .enums import *
-
-
-def toFloat(value: str) -> float:
-    if value is None:
-        return -1.0
-    try:
-        return float(value)
-    except:
-        return -1.0
+from .utils import is_valid_email, toFloat
 
 
 class MirAIeHub:
@@ -35,18 +28,18 @@ class MirAIeHub:
             "Content-Type": "application/json",
         }
 
-    async def init(self, mobile: str, password: str, broker: MirAIeBroker):
+    async def init(self, username: str, password: str, broker: MirAIeBroker):
         self._broker = broker
 
-        await self._authenticate(mobile, password)
+        await self._authenticate(username, password)
         await self._get_home_details()
         await self.get_all_device_status()
-        self._init_broker(broker)
+        await self._init_broker(broker)
 
-    def _init_broker(self, broker: MirAIeBroker):
+    async def _init_broker(self, broker: MirAIeBroker):
         topics = self.get_device_topics()
         broker.set_topics(topics)
-        broker.connect(self.home.id, self.user.access_token, self.on_get_token)
+        await broker.connect(self.home.id, self.user.access_token, self.on_get_token)
 
     @property
     def broker(self):
@@ -67,13 +60,19 @@ class MirAIeHub:
         cb(self.home.id, self.user.access_token)
 
     # Authenticate with the MirAIe API
-    async def _authenticate(self, mobile: str, password: str):
+    async def _authenticate(self, username: str, password: str):
+        isEmail = is_valid_email(username)
+
         data = {
             "clientId": constants.httpClientId,
-            "mobile": mobile,
             "password": password,
             "scope": "an_14214235325",
         }
+
+        if isEmail:
+            data["email"] = username
+        else:
+            data["mobile"] = username
 
         response = await self.http.post(constants.loginUrl, json=data)
 
@@ -85,7 +84,7 @@ class MirAIeHub:
                 user_id=json["userId"],
                 expires_in=json["expiresIn"],
             )
-            self.username = mobile
+            self.username = username
             self.password = password
             return True
 
