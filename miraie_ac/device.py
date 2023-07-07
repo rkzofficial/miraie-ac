@@ -1,15 +1,7 @@
 from typing import Callable
 from .broker import MirAIeBroker
 from .enums import *
-
-
-def toFloat(value: str) -> float:
-    if value is None:
-        return -1.0
-    try:
-        return float(value)
-    except:
-        return -1.0
+from .utils import toFloat
 
 
 class DeviceStatus:
@@ -129,23 +121,23 @@ class Device:
     def set_status(self, status: DeviceStatus):
         self.status = status
 
-    def turn_on(self):
-        self.broker.set_power(self.control_topic, PowerMode.ON)
+    async def turn_on(self):
+        await self.broker.set_power(self.control_topic, PowerMode.ON)
 
-    def turn_off(self):
-        self.broker.set_power(self.control_topic, PowerMode.OFF)
+    async def turn_off(self):
+        await self.broker.set_power(self.control_topic, PowerMode.OFF)
 
-    def set_temperature(self, temperature: float):
-        self.broker.set_temperature(self.control_topic, temperature)
+    async def set_temperature(self, temperature: float):
+        await self.broker.set_temperature(self.control_topic, temperature)
 
-    def set_hvac_mode(self, mode: HVACMode):
-        self.broker.set_hvac_mode(self.control_topic, mode)
+    async def set_hvac_mode(self, mode: HVACMode):
+        await self.broker.set_hvac_mode(self.control_topic, mode)
 
-    def set_fan_mode(self, mode: FanMode):
-        self.broker.set_fan_mode(self.control_topic, mode)
+    async def set_fan_mode(self, mode: FanMode):
+        await self.broker.set_fan_mode(self.control_topic, mode)
 
-    def set_preset_mode(self, mode: PresetMode):
-        self.broker.set_preset_mode(self.control_topic, mode)
+    async def set_preset_mode(self, mode: PresetMode):
+        await self.broker.set_preset_mode(self.control_topic, mode)
 
-    def set_swing_mode(self, mode: SwingMode):
-        self.broker.set_swing_mode(self.control_topic, mode)
+    async def set_swing_mode(self, mode: SwingMode):
+        await self.broker.set_swing_mode(self.control_topic, mode)

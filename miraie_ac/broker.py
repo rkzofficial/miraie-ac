@@ -27,12 +27,12 @@ class MirAIeBroker:
     def set_topics(self, topics: list[str]):
         self.commandTopics = topics
 
-    async def on_connect(self, client: Client):
+    async def on_connect(self):
         for topic in self.commandTopics:
             print("Subscribing to topic: ", topic)
-            await client.subscribe(topic)
+            await self.client.subscribe(topic)
 
-    def on_message(self, client: Client, message: Message):
+    def on_message(self, message: Message):
         parsed = json.loads(message.payload.decode("utf-8"))
         func = self.status_callbacks.get(message.topic.value)
         func(parsed)
@@ -46,7 +46,7 @@ class MirAIeBroker:
         if self.use_ssl:
             context = ssl.create_default_context(cafile=certifi.where())
 
-        client = Client(
+        self.client = Client(
             hostname=self.host,
             port=self.port,
             username=username,
@@ -54,14 +54,16 @@ class MirAIeBroker:
             tls_context=context,
         )
 
+        client = self.client
+
         while True:
             try:
                 async with client:
                     async with client.messages() as messages:
-                        await self.on_connect(client)
+                        await self.on_connect()
 
                         async for message in messages:
-                            self.on_message(client, message)
+                            self.on_message(message)
 
             except MqttError as error:
                 print(
@@ -83,8 +85,8 @@ class MirAIeBroker:
         payload["ps"] = str(power.value)
         return payload
 
-    def set_power(self, topic: str, power: PowerMode):
-        self.client.publish(topic, json.dumps(self.build_power_payload(power)))
+    async def set_power(self, topic: str, power: PowerMode):
+        await self.client.publish(topic, json.dumps(self.build_power_payload(power)))
 
     # Temperature
     def build_temperature_payload(self, temperature: float):
@@ -92,8 +94,8 @@ class MirAIeBroker:
         payload["actmp"] = str(temperature)
         return payload
 
-    def set_temperature(self, topic: str, temperature: float):
-        self.client.publish(
+    async def set_temperature(self, topic: str, temperature: float):
+        await self.client.publish(
             topic, json.dumps(self.build_temperature_payload(temperature))
         )
 
@@ -103,8 +105,8 @@ class MirAIeBroker:
         payload["acmd"] = str(mode.value)
         return payload
 
-    def set_hvac_mode(self, topic: str, mode: HVACMode):
-        self.client.publish(topic, json.dumps(self.build_hvac_mode_payload(mode)))
+    async def set_hvac_mode(self, topic: str, mode: HVACMode):
+        await self.client.publish(topic, json.dumps(self.build_hvac_mode_payload(mode)))
 
     # Fan Mode
     def build_fan_mode_payload(self, mode: FanMode):
@@ -112,8 +114,8 @@ class MirAIeBroker:
         payload["acfs"] = str(mode.value)
         return payload
 
-    def set_fan_mode(self, topic: str, mode: FanMode):
-        self.client.publish(topic, json.dumps(self.build_fan_mode_payload(mode)))
+    async def set_fan_mode(self, topic: str, mode: FanMode):
+        await self.client.publish(topic, json.dumps(self.build_fan_mode_payload(mode)))
 
     # Preset Mode
     def build_preset_mode_payload(self, mode: PresetMode):
@@ -131,8 +133,10 @@ class MirAIeBroker:
             payload["acpm"] = "on"
         return payload
 
-    def set_preset_mode(self, topic: str, mode: PresetMode):
-        self.client.publish(topic, json.dumps(self.build_preset_mode_payload(mode)))
+    async def set_preset_mode(self, topic: str, mode: PresetMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_preset_mode_payload(mode))
+        )
 
     # Swing Mode
     def build_swing_mode_payload(self, mode: SwingMode):
@@ -140,5 +144,7 @@ class MirAIeBroker:
         payload["acvs"] = mode.value
         return payload
 
-    def set_swing_mode(self, topic: str, mode: SwingMode):
-        self.client.publish(topic, json.dumps(self.build_swing_mode_payload(mode)))
+    async def set_swing_mode(self, topic: str, mode: SwingMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_swing_mode_payload(mode))
+        )
