@@ -15,6 +15,7 @@ class MirAIeHub:
     def __init__(self):
         self.http = aiohttp.ClientSession()
         self.topics_map: dict[str, MirAIeTopic] = {}
+        self.background_tasks = set()
 
     async def __aenter__(self):
         return self
@@ -39,7 +40,14 @@ class MirAIeHub:
     async def _init_broker(self, broker: MirAIeBroker):
         topics = self.get_device_topics()
         broker.set_topics(topics)
-        await broker.connect(self.home.id, self.user.access_token, self.on_get_token)
+        loop = asyncio.get_event_loop()
+        # Listen for mqtt messages in an (unawaited) asyncio task
+        task = loop.create_task(
+            broker.connect(self.home.id, self.user.access_token, self.get_token)
+        )
+        # Save a reference to the task so it doesn't get garbage collected
+        self.background_tasks.add(task)
+        task.add_done_callback(self.background_tasks.remove)
 
     @property
     def broker(self):
@@ -55,9 +63,9 @@ class MirAIeHub:
         miraie_topics = [topic for topics in device_topics for topic in topics]
         return miraie_topics
 
-    async def on_get_token(self, cb):
+    async def get_token(self):
         await self._authenticate(self.username, self.password)
-        cb(self.home.id, self.user.access_token)
+        return self.user.access_token
 
     # Authenticate with the MirAIe API
     async def _authenticate(self, username: str, password: str):
