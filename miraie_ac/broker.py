@@ -1,4 +1,4 @@
-from asyncio_mqtt import Client, Message, MqttError
+from aiomqtt import Client, Message, MqttError
 import asyncio
 import ssl
 import certifi
