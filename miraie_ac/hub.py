@@ -64,8 +64,11 @@ class MirAIeHub:
         return miraie_topics
 
     async def get_token(self):
-        await self._authenticate(self.username, self.password)
-        return self.user.access_token
+        try:
+            await self._authenticate(self.username, self.password)
+            return self.user.access_token
+        except:
+            return self.user.access_token
 
     # Authenticate with the MirAIe API
     async def _authenticate(self, username: str, password: str):
