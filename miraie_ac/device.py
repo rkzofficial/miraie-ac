@@ -141,3 +141,6 @@ class Device:
 
     async def set_swing_mode(self, mode: SwingMode):
         await self.broker.set_swing_mode(self.control_topic, mode)
+        
+    async def set_display_mode(self, mode: DisplayMode):
+        await self.broker.set_display_mode(self.control_topic, mode)
