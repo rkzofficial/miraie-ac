@@ -148,3 +148,12 @@ class MirAIeBroker:
         await self.client.publish(
             topic, json.dumps(self.build_swing_mode_payload(mode))
         )
+        
+    # Display Mode
+    def build_display_mode_payload(self, mode: DisplayMode):
+        payload = self.build_base_payload()
+        payload["acdc"] = str(mode.value)
+        return payload
+
+    async def set_display_mode(self, topic: str, mode: DisplayMode):
+        await self.client.publish(topic, json.dumps(self.build_display_mode_payload(mode)))
