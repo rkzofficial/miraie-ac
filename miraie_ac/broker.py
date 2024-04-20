@@ -4,7 +4,7 @@ import ssl
 import certifi
 import random
 import json
-from .enums import *
+from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode
 from .user import User
 
 
@@ -46,24 +46,19 @@ class MirAIeBroker:
         if self.use_ssl:
             context = ssl.create_default_context(cafile=certifi.where())
 
-        self.client = Client(
-            hostname=self.host,
-            port=self.port,
-            username=username,
-            password=password,
-            tls_context=context,
-        )
-
-        client = self.client
-
         while True:
             try:
-                async with client:
-                    async with client.messages() as messages:
-                        await self.on_connect()
-
-                        async for message in messages:
-                            self.on_message(message)
+                async with Client(
+                    hostname=self.host,
+                    port=self.port,
+                    username=username,
+                    password=password,
+                    tls_context=context,
+                ) as client:
+                    self.client = client
+                    await self.on_connect()
+                    async for message in client.messages:
+                        self.on_message(message)
 
             except MqttError as error:
                 print(

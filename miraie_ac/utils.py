@@ -15,5 +15,5 @@ def toFloat(value: str) -> float:
         return -1.0
     try:
         return float(value)
-    except:
+    except ValueError:
         return -1.0

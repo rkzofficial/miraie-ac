@@ -7,7 +7,7 @@ from .user import User
 from .topic import MirAIeTopic
 from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
-from .enums import *
+from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode
 from .utils import is_valid_email, toFloat
 
 
@@ -67,7 +67,7 @@ class MirAIeHub:
         try:
             await self._authenticate(self.username, self.password)
             return self.user.access_token
-        except:
+        except Exception:
             return self.user.access_token
 
     # Authenticate with the MirAIe API
