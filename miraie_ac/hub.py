@@ -184,7 +184,7 @@ class MirAIeHub:
             device = next(d for d in self.home.devices if d.id == status["deviceId"])
 
             status_obj: DeviceStatus
-            if "ty" not in status:
+            if "ty" not in status or status["ty"] != "AC":
                 status_obj = DeviceStatus(
                     is_online=False,
                     temperature=24.0,
