@@ -4,7 +4,7 @@ import ssl
 import certifi
 import random
 import json
-from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode
+from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode
 from .user import User
 
 
@@ -143,7 +143,7 @@ class MirAIeBroker:
         await self.client.publish(
             topic, json.dumps(self.build_swing_mode_payload(mode))
         )
-        
+
     # Display Mode
     def build_display_mode_payload(self, mode: DisplayMode):
         payload = self.build_base_payload()
@@ -151,4 +151,6 @@ class MirAIeBroker:
         return payload
 
     async def set_display_mode(self, topic: str, mode: DisplayMode):
-        await self.client.publish(topic, json.dumps(self.build_display_mode_payload(mode)))
+        await self.client.publish(
+            topic, json.dumps(self.build_display_mode_payload(mode))
+        )
