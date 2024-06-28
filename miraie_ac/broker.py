@@ -117,15 +117,11 @@ class MirAIeBroker:
         payload = self.build_base_payload()
 
         if mode == PresetMode.NONE:
-            payload["acem"] = "off"
-            payload["acpm"] = "off"
+            payload["cnv"] = 0
         elif mode == PresetMode.ECO:
-            payload["acem"] = "on"
-            payload["acpm"] = "off"
-            payload["actmp"] = 26.0
+            payload["cnv"] = 40
         elif mode == PresetMode.BOOST:
-            payload["acem"] = "off"
-            payload["acpm"] = "on"
+            payload["cnv"] = 55
         return payload
 
     async def set_preset_mode(self, topic: str, mode: PresetMode):
