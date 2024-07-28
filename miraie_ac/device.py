@@ -12,7 +12,8 @@ class DeviceStatus:
         room_temperature: float,
         power_mode: PowerMode,
         fan_mode: FanMode,
-        swing_mode: SwingMode,
+        v_swing_mode: SwingMode,
+        h_swing_mode: SwingMode,
         display_mode: DisplayMode,
         hvac_mode: HVACMode,
         preset_mode: PresetMode,
@@ -22,7 +23,8 @@ class DeviceStatus:
         self.room_temperature = room_temperature
         self.power_mode = power_mode
         self.fan_mode = fan_mode
-        self.swing_mode = swing_mode
+        self.v_swing_mode = v_swing_mode
+        self.h_swing_mode = h_swing_mode
         self.display_mode = display_mode
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
@@ -98,7 +100,8 @@ class Device:
             room_temperature=toFloat(status["rmtmp"]),
             power_mode=PowerMode(status["ps"]),
             fan_mode=FanMode(status["acfs"]),
-            swing_mode=SwingMode(status["acvs"]),
+            v_swing_mode=SwingMode(status["acvs"]),
+            h_swing_mode=SwingMode(status["achs"]),
             display_mode=DisplayMode(status["acdc"]),
             hvac_mode=HVACMode(status["acmd"]),
             preset_mode=PresetMode.BOOST
@@ -139,8 +142,11 @@ class Device:
     async def set_preset_mode(self, mode: PresetMode):
         await self.broker.set_preset_mode(self.control_topic, mode)
 
-    async def set_swing_mode(self, mode: SwingMode):
-        await self.broker.set_swing_mode(self.control_topic, mode)
+    async def set_v_swing_mode(self, mode: SwingMode):
+        await self.broker.set_v_swing_mode(self.control_topic, mode)
+        
+    async def set_h_swing_mode(self, mode: SwingMode):
+        await self.broker.set_h_swing_mode(self.control_topic, mode)
         
     async def set_display_mode(self, mode: DisplayMode):
         await self.broker.set_display_mode(self.control_topic, mode)

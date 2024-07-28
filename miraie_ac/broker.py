@@ -134,14 +134,24 @@ class MirAIeBroker:
         )
 
     # Swing Mode
-    def build_swing_mode_payload(self, mode: SwingMode):
+    def build_v_swing_mode_payload(self, mode: SwingMode):
         payload = self.build_base_payload()
         payload["acvs"] = mode.value
         return payload
 
-    async def set_swing_mode(self, topic: str, mode: SwingMode):
+    async def set_v_swing_mode(self, topic: str, mode: SwingMode):
         await self.client.publish(
-            topic, json.dumps(self.build_swing_mode_payload(mode))
+            topic, json.dumps(self.build_v_swing_mode_payload(mode))
+        )
+        
+    def build_h_swing_mode_payload(self, mode: SwingMode):
+        payload = self.build_base_payload()
+        payload["achs"] = mode.value
+        return payload
+
+    async def set_h_swing_mode(self, topic: str, mode: SwingMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_h_swing_mode_payload(mode))
         )
 
     # Display Mode
