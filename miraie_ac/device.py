@@ -72,7 +72,7 @@ class DeviceDetails:
         return (
             f"Brand: {self.brand}\n" +
             f"Category: {self.category}\n" +
-            f"Model Name{self.model_name}\n" +
+            f"Model Name: {self.model_name}\n" +
             f"Model #: {self.model_number}\n" +
             f"MAC address: {self.mac_address}\n" +
             f"Firmware version: {self.firmware_version}\n" +
