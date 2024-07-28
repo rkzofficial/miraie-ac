@@ -133,7 +133,7 @@ class MirAIeBroker:
             topic, json.dumps(self.build_preset_mode_payload(mode))
         )
 
-    # Swing Mode
+    # Vertical Swing Mode
     def build_v_swing_mode_payload(self, mode: SwingMode):
         payload = self.build_base_payload()
         payload["acvs"] = mode.value
@@ -143,7 +143,8 @@ class MirAIeBroker:
         await self.client.publish(
             topic, json.dumps(self.build_v_swing_mode_payload(mode))
         )
-        
+    
+    # Horizontal Swing Mode
     def build_h_swing_mode_payload(self, mode: SwingMode):
         payload = self.build_base_payload()
         payload["achs"] = mode.value
