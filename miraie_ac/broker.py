@@ -119,13 +119,16 @@ class MirAIeBroker:
         if mode == PresetMode.NONE:
             payload["acem"] = "off"
             payload["acpm"] = "off"
+            payload["cnv"] = 0
         elif mode == PresetMode.ECO:
             payload["acem"] = "on"
             payload["acpm"] = "off"
             payload["actmp"] = 26.0
+            payload["cnv"] = 0
         elif mode == PresetMode.BOOST:
             payload["acem"] = "off"
             payload["acpm"] = "on"
+            payload["cnv"] = 0
         return payload
 
     async def set_preset_mode(self, topic: str, mode: PresetMode):
@@ -169,7 +172,9 @@ class MirAIeBroker:
     # Converti Mode
     def build_converti_mode_payload(self, mode: ConvertiMode):
         payload = self.build_base_payload()
-        payload["cnv"] = str(mode.value)
+        payload["acem"] = "off"
+        payload["acpm"] = "off"
+        payload["cnv"] = mode.value
         return payload
 
     async def set_converti_mode(self, topic: str, mode: ConvertiMode):
