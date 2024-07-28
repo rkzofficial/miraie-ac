@@ -9,4 +9,5 @@ from miraie_ac.enums import (
     PowerMode,
     PresetMode,
     SwingMode,
+    ConvertiMode,
 )
