@@ -1,6 +1,6 @@
 from typing import Callable
 from .broker import MirAIeBroker
-from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode
+from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
 from .utils import toFloat
 
 
@@ -17,6 +17,7 @@ class DeviceStatus:
         display_mode: DisplayMode,
         hvac_mode: HVACMode,
         preset_mode: PresetMode,
+        converti_mode: ConvertiMode,
     ):
         self.is_online = is_online
         self.temperature = temperature
@@ -28,6 +29,7 @@ class DeviceStatus:
         self.display_mode = display_mode
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
+        self.converti_mode = converti_mode
 
 
 class DeviceDetails:
@@ -109,6 +111,7 @@ class Device:
             else PresetMode.ECO
             if status["acem"] == "on"
             else PresetMode.NONE,
+            converti_mode=ConvertiMode(status["cnv"]),
         )
 
         self.set_status(status_obj)
@@ -150,3 +153,6 @@ class Device:
         
     async def set_display_mode(self, mode: DisplayMode):
         await self.broker.set_display_mode(self.control_topic, mode)
+    
+    async def set_converti_mode(self, mode: ConvertiMode):
+        await self.broker.set_converti_mode(self.control_topic, mode)

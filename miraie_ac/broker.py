@@ -4,7 +4,7 @@ import ssl
 import certifi
 import random
 import json
-from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode
+from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode
 from .user import User
 
 
@@ -164,4 +164,15 @@ class MirAIeBroker:
     async def set_display_mode(self, topic: str, mode: DisplayMode):
         await self.client.publish(
             topic, json.dumps(self.build_display_mode_payload(mode))
+        )
+        
+    # Converti Mode
+    def build_converti_mode_payload(self, mode: ConvertiMode):
+        payload = self.build_base_payload()
+        payload["cnv"] = str(mode.value)
+        return payload
+
+    async def set_converti_mode(self, topic: str, mode: ConvertiMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_converti_mode_payload(mode))
         )

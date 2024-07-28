@@ -7,7 +7,7 @@ from .user import User
 from .topic import MirAIeTopic
 from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
-from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode
+from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
 from .utils import is_valid_email, toFloat
 
 
@@ -196,6 +196,7 @@ class MirAIeHub:
                     display_mode=DisplayMode.ON,
                     hvac_mode=HVACMode.AUTO,
                     preset_mode=PresetMode.NONE,
+                    converti_mode=ConvertiMode.OFF,
                 )
             else:
                 status_obj = DeviceStatus(
@@ -213,6 +214,7 @@ class MirAIeHub:
                     else PresetMode.ECO
                     if status["acem"] == "on"
                     else PresetMode.NONE,
+                    converti_mode=ConvertiMode(status["cnv"]),
                 )
 
             device.set_status(status_obj)
