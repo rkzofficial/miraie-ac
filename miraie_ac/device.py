@@ -30,6 +30,21 @@ class DeviceStatus:
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
         self.converti_mode = converti_mode
+    
+    def __str__(self):
+        return (
+            f"Is online? - {self.is_online}\n" +
+            f"Temperature: {self.temperature}\n" +
+            f"Room temperature: {self.room_temperature}\n" +
+            f"Power mode: {self.power_mode}\n" +
+            f"Fan mode: {self.fan_mode}\n" +
+            f"Vertical swing mode: {self.v_swing_mode}\n" +
+            f"Horizontal swing mode: {self.h_swing_mode}\n" +
+            f"Display mode: {self.display_mode}\n" +
+            f"Hvac mode: {self.hvac_mode}\n" +
+            f"Preset mode: {self.preset_mode}\n" +
+            f"Converti mode: {self.converti_mode}\n"
+        )
 
 
 class DeviceDetails:
@@ -52,7 +67,19 @@ class DeviceDetails:
         self.serial_number = serial_number
         self.model_number = model_number
         self.product_serial_number = product_serial_number
-
+        
+    def __str__(self):
+        return (
+            f"Brand: {self.brand}\n" +
+            f"Category: {self.category}\n" +
+            f"Model Name{self.model_name}\n" +
+            f"Model #: {self.model_number}\n" +
+            f"MAC address: {self.mac_address}\n" +
+            f"Firmware version: {self.firmware_version}\n" +
+            f"Serial number: {self.serial_number}\n" +
+            f"Model number: {self.model_number}\n" +
+            f"Product serial number: {self.product_serial_number}\n"
+        )
 
 class Device:
     def __init__(
@@ -82,6 +109,16 @@ class Device:
     def __del__(self):
         self.broker.remove_device_callback(self.status_topic)
         self.broker.remove_device_callback(self.connection_status_topic)
+        
+    def __str__(self):
+        return (
+            f"Id: {self.id}\n" +
+            f"Name: {self.name}\n" +
+            f"Friendly name: {self.friendly_name}\n" +
+            f"Control topic: {self.control_topic}\n" +
+            f"Status topic: {self.status_topic}\n" +
+            f"Connection status topic: {self.connection_status_topic}\n"
+        )
 
     def refresh(self):
         for callback in self._callbacks:
