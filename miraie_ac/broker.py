@@ -4,7 +4,7 @@ import ssl
 import certifi
 import random
 import json
-from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode
+from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode
 from .user import User
 
 
@@ -119,13 +119,16 @@ class MirAIeBroker:
         if mode == PresetMode.NONE:
             payload["acem"] = "off"
             payload["acpm"] = "off"
+            payload["cnv"] = 0
         elif mode == PresetMode.ECO:
             payload["acem"] = "on"
             payload["acpm"] = "off"
             payload["actmp"] = 26.0
+            payload["cnv"] = 0
         elif mode == PresetMode.BOOST:
             payload["acem"] = "off"
             payload["acpm"] = "on"
+            payload["cnv"] = 0
         return payload
 
     async def set_preset_mode(self, topic: str, mode: PresetMode):
@@ -133,15 +136,26 @@ class MirAIeBroker:
             topic, json.dumps(self.build_preset_mode_payload(mode))
         )
 
-    # Swing Mode
-    def build_swing_mode_payload(self, mode: SwingMode):
+    # Vertical Swing Mode
+    def build_v_swing_mode_payload(self, mode: SwingMode):
         payload = self.build_base_payload()
         payload["acvs"] = mode.value
         return payload
 
-    async def set_swing_mode(self, topic: str, mode: SwingMode):
+    async def set_v_swing_mode(self, topic: str, mode: SwingMode):
         await self.client.publish(
-            topic, json.dumps(self.build_swing_mode_payload(mode))
+            topic, json.dumps(self.build_v_swing_mode_payload(mode))
+        )
+    
+    # Horizontal Swing Mode
+    def build_h_swing_mode_payload(self, mode: SwingMode):
+        payload = self.build_base_payload()
+        payload["achs"] = mode.value
+        return payload
+
+    async def set_h_swing_mode(self, topic: str, mode: SwingMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_h_swing_mode_payload(mode))
         )
 
     # Display Mode
@@ -153,4 +167,17 @@ class MirAIeBroker:
     async def set_display_mode(self, topic: str, mode: DisplayMode):
         await self.client.publish(
             topic, json.dumps(self.build_display_mode_payload(mode))
+        )
+        
+    # Converti Mode
+    def build_converti_mode_payload(self, mode: ConvertiMode):
+        payload = self.build_base_payload()
+        payload["acem"] = "off"
+        payload["acpm"] = "off"
+        payload["cnv"] = mode.value
+        return payload
+
+    async def set_converti_mode(self, topic: str, mode: ConvertiMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_converti_mode_payload(mode))
         )

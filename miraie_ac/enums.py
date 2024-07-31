@@ -51,3 +51,15 @@ class SwingMode(Enum):
     THREE = 3
     FOUR = 4
     FIVE = 5
+
+class ConvertiMode(Enum):
+    """Enum for Converti mode."""
+
+    HC = 110
+    FC = 100
+    C90 = 90
+    C80 = 80
+    C70 = 70
+    C55 = 55
+    C40 = 40
+    OFF = 0
