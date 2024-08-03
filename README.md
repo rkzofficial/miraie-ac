@@ -20,3 +20,14 @@ hub = MirAIeHub()
 # Intialize the hub (+91xxxxxxxxxx, password, broker)
 hub.init(mobile, password, broker)
 ```
+
+### Logs can be enabled in Home Assistant as follows
+
+```
+logger:
+  ...
+  logs:
+    ...
+    homeassistant.components.miraie: debug
+    ...
+```
