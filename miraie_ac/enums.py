@@ -25,6 +25,7 @@ class HVACMode(Enum):
     AUTO = "auto"
     DRY = "dry"
     FAN = "fan"
+    HEAT = 'heat'
 
 
 class PowerMode(Enum):

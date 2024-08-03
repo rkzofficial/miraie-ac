@@ -1,5 +1,5 @@
 {
-    "acmd": "auto", // auto, dry, fan, cool
+    "acmd": "auto", // auto, dry, fan, cool, heat
     "ki": 0,
     "cnt": "an",
     "sid": "14"

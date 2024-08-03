@@ -50,3 +50,5 @@ logger:
     ...
 ```
 
+### Notes
+[List of panasonic ACs](https://www.panasonic.com/in/consumer/air-conditioners/split-ac/?browsing=params&sort=Featured&page=1)
