@@ -2,6 +2,7 @@ from typing import Callable
 from .broker import MirAIeBroker
 from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
 from .utils import toFloat
+from .logger import LOGGER
 
 
 class DeviceStatus:
@@ -30,6 +31,7 @@ class DeviceStatus:
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
         self.converti_mode = converti_mode
+        LOGGER.debug(f"Device status: {self.__str__()}")
     
     def __str__(self):
         return (
@@ -67,6 +69,7 @@ class DeviceDetails:
         self.serial_number = serial_number
         self.model_number = model_number
         self.product_serial_number = product_serial_number
+        LOGGER.debug(f"Device details: {self.__str__()}")
         
     def __str__(self):
         return (
@@ -133,6 +136,7 @@ class Device:
         self._callbacks.discard(callback)
 
     def status_handler(self, status: any):
+        LOGGER.debug(f"Raw device status: {status}")
         status_obj = DeviceStatus(
             is_online=self.status.is_online,
             temperature=toFloat(status["actmp"]),

@@ -6,6 +6,7 @@ import random
 import json
 from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode
 from .user import User
+from .logger import LOGGER
 
 
 class MirAIeBroker:
@@ -57,13 +58,12 @@ class MirAIeBroker:
                 ) as client:
                     self.client = client
                     await self.on_connect()
+                    LOGGER.info(f"Broker connection has been established")
                     async for message in client.messages:
                         self.on_message(message)
 
             except MqttError as error:
-                print(
-                    f'Error "{error}". Reconnecting in {self.reconnect_interval} seconds.'
-                )
+                LOGGER.error(f'Error "{error}". Reconnecting in {self.reconnect_interval} seconds.')
                 password = await get_token()
                 await asyncio.sleep(self.reconnect_interval)
 

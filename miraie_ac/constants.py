@@ -5,3 +5,5 @@ statusUrl = "https://app.miraie.in/simplifi/v1/deviceManagement/devices/{deviceI
 deviceDetailsUrl = "https://app.miraie.in/simplifi/v1/deviceManagement/devices/deviceId"
 monthlyPwrConsUrl = "https://app.miraie.in/simplifi/v1/powerConsumption/devices/{deviceId}?grain=Monthly&startDate={date}&endDate={date}"
 dailyPwrConsUrl = "https://app.miraie.in/simplifi/v1/powerConsumption/devices/{deviceId}?grain=Daily&startDate={date}&endDate={date}"
+
+PACKAGE_NAME = "custom_components.miraie"
