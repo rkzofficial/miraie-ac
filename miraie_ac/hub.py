@@ -214,7 +214,7 @@ class MirAIeHub:
                     else PresetMode.ECO
                     if status["acem"] == "on"
                     else PresetMode.NONE,
-                    converti_mode=ConvertiMode(status["cnv"]),
+                    converti_mode=ConvertiMode(status.get("cnv", 0)),
                 )
 
             device.set_status(status_obj)
