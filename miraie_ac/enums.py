@@ -63,4 +63,6 @@ class ConvertiMode(Enum):
     C70 = 70
     C55 = 55
     C40 = 40
+    # Not supported
+    NS = 1
     OFF = 0
