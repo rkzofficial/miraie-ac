@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "miraie-ac"
-version = "1.0.8"
+version = "1.0.9"
 description = "MirAIe-AC API for Python"
 authors = ["Raj Kishore <40551183+rkzofficial@users.noreply.github.com>", "Ali Jafri <deCodeIt@users.noreply.github.com>"]
 license = "MIT"

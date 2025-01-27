@@ -9,6 +9,7 @@ from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
 from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
 from .utils import is_valid_email, toFloat
+from .logger import LOGGER
 
 
 class MirAIeHub:
@@ -107,7 +108,18 @@ class MirAIeHub:
             constants.deviceDetailsUrl + "/" + deviceIds,
             headers=self.__build_headers__(),
         )
-        return await response.json()
+        
+        try:
+            return await response.json()
+        except aiohttp.ContentTypeError as error:
+            LOGGER.error(f'_get_device_details error {error}', exc_info=True)
+            LOGGER.debug(f'url: {response.url}')
+            LOGGER.debug(f'status: {response.status}')
+            LOGGER.debug(f'reason: {response.reason}')
+            LOGGER.debug(f'content_type: {response.content_type}')
+            LOGGER.debug(f'text response: {await response.text()}')
+            raise Exception("Unable to fetch device details failed")
+            
 
     # Process the home details
     async def _process_home_details(self, json_data):
