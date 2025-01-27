@@ -112,7 +112,7 @@ class MirAIeHub:
         try:
             return await response.json()
         except aiohttp.ContentTypeError as error:
-            LOGGER.error(f'_get_device_details error {error}')
+            LOGGER.error(f'_get_device_details error {error}', exc_info=True)
             LOGGER.debug(f'url: {response.url}')
             LOGGER.debug(f'status: {response.status}')
             LOGGER.debug(f'reason: {response.reason}')
