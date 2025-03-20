@@ -119,15 +119,23 @@ class MirAIeBroker:
         if mode == PresetMode.NONE:
             payload["acem"] = "off"
             payload["acpm"] = "off"
+            payload["acec"] = "off"
             payload["cnv"] = 0
         elif mode == PresetMode.ECO:
             payload["acem"] = "on"
             payload["acpm"] = "off"
+            payload["acec"] = "off"
             payload["actmp"] = 26.0
             payload["cnv"] = 0
         elif mode == PresetMode.BOOST:
             payload["acem"] = "off"
             payload["acpm"] = "on"
+            payload["acec"] = "off"
+            payload["cnv"] = 0
+        elif mode == PresetMode.CLEAN:
+            payload["acem"] = "off"
+            payload["acpm"] = "off"
+            payload["acec"] = "on"
             payload["cnv"] = 0
         return payload
 

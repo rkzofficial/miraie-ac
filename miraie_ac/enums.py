@@ -41,6 +41,7 @@ class PresetMode(Enum):
     NONE = "none"
     ECO = "eco"
     BOOST = "boost"
+    CLEAN = "clean"
 
 
 class SwingMode(Enum):
