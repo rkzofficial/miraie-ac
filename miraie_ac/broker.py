@@ -4,7 +4,7 @@ import ssl
 import certifi
 import random
 import json
-from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode, CleanMode
+from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode
 from .user import User
 from .logger import LOGGER
 
@@ -119,15 +119,23 @@ class MirAIeBroker:
         if mode == PresetMode.NONE:
             payload["acem"] = "off"
             payload["acpm"] = "off"
+            payload["acec"] = "off"
             payload["cnv"] = 0
         elif mode == PresetMode.ECO:
             payload["acem"] = "on"
             payload["acpm"] = "off"
+            payload["acec"] = "off"
             payload["actmp"] = 26.0
             payload["cnv"] = 0
         elif mode == PresetMode.BOOST:
             payload["acem"] = "off"
             payload["acpm"] = "on"
+            payload["acec"] = "off"
+            payload["cnv"] = 0
+        elif mode == PresetMode.CLEAN:
+            payload["acem"] = "off"
+            payload["acpm"] = "off"
+            payload["acec"] = "on"
             payload["cnv"] = 0
         return payload
 
@@ -180,15 +188,4 @@ class MirAIeBroker:
     async def set_converti_mode(self, topic: str, mode: ConvertiMode):
         await self.client.publish(
             topic, json.dumps(self.build_converti_mode_payload(mode))
-        )
-        
-    # Clean
-    def build_clean_payload(self, mode: CleanMode):
-        payload = self.build_base_payload()
-        payload["acec"] = str(mode.value)
-        return payload
-
-    async def set_clean_mode(self, topic: str, mode: CleanMode):
-        await self.client.publish(
-            topic, json.dumps(self.build_clean_payload(mode))
         )
