@@ -6,6 +6,12 @@ class DisplayMode(Enum):
 
     ON = "on"
     OFF = "off"
+    
+class CleanMode(Enum):
+    """Enum for Clean mode."""
+
+    ON = "on"
+    OFF = "off"
 
 
 class FanMode(Enum):

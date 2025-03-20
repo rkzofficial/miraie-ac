@@ -1,6 +1,6 @@
 from typing import Callable
 from .broker import MirAIeBroker
-from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
+from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode, CleanMode
 from .utils import toFloat
 from .logger import LOGGER
 
@@ -205,3 +205,6 @@ class Device:
     
     async def set_converti_mode(self, mode: ConvertiMode):
         await self.broker.set_converti_mode(self.control_topic, mode)
+        
+    async def set_clean_mode(self, mode: CleanMode):
+        await self.broker.set_clean_mode(self.control_topic, mode)

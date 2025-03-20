@@ -10,4 +10,5 @@ from miraie_ac.enums import (
     PresetMode,
     SwingMode,
     ConvertiMode,
+    CleanMode,
 )
