@@ -47,7 +47,9 @@ class DeviceStatus:
             f"Preset mode: {self.preset_mode}\n" +
             f"Converti mode: {self.converti_mode}\n"
         )
-
+        
+    def __repr__(self):
+        return self.__str__()
 
 class DeviceDetails:
     def __init__(
@@ -83,6 +85,9 @@ class DeviceDetails:
             f"Model number: {self.model_number}\n" +
             f"Product serial number: {self.product_serial_number}\n"
         )
+    
+    def __repr__(self):
+        return self.__str__()
 
 class Device:
     def __init__(
@@ -122,6 +127,9 @@ class Device:
             f"Status topic: {self.status_topic}\n" +
             f"Connection status topic: {self.connection_status_topic}\n"
         )
+        
+    def __repr__(self):
+        return self.__str__()
 
     def refresh(self):
         for callback in self._callbacks:
