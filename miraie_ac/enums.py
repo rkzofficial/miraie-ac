@@ -67,3 +67,15 @@ class ConvertiMode(Enum):
     # Not supported
     NS = 1
     OFF = 0
+
+class ConsumptionPeriodType(Enum):
+    DAILY = "Daily"
+    WEEKLY = "Weekly"
+    MONTHLY = "Monthly"
+
+    def response_key(self) -> str:
+        return {
+            ConsumptionPeriodType.DAILY: "day",
+            ConsumptionPeriodType.WEEKLY: "week",
+            ConsumptionPeriodType.MONTHLY: "month",
+        }[self]
