@@ -7,7 +7,8 @@ from .user import User
 from .topic import MirAIeTopic
 from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
-from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
+from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode, \
+    ConsumptionPeriodType
 from .utils import is_valid_email, toFloat
 from .logger import LOGGER
 
@@ -232,3 +233,45 @@ class MirAIeHub:
             device.set_status(status_obj)
 
         return statuses
+
+    async def get_energy_consumption(
+        self, device: Device, period_type: ConsumptionPeriodType, from_date: str, to_date: str = None
+    ) -> dict:
+        """
+        Fetch energy consumption data for a device over a specified time period.
+
+        This method queries the MirAIe energy consumption API to retrieve energy consumption data
+        for a given device over daily, weekly, or monthly periods.
+
+        Args:
+            device (Device): The device for which energy consumption data is requested.
+            period_type (ConsumptionPeriodType): The type of period to query:
+                - `Daily`: `from_date` and `to_date` must be in the format `DDMMYYYY`.
+                - `Weekly`: `from_date` and `to_date` must be Sundays in the format `DDMMYYYY`.
+                - `Monthly`: `from_date` and `to_date` must be in the format `MMYYYY`.
+            from_date (str): The start date of the requested period.
+            to_date (str, optional): The end date of the requested period. Defaults to `from_date`.
+
+        Returns:
+            dict: A mapping of date keys (of the same format as the date input strings)
+                  to corresponding energy consumption values (in kWh).
+
+        Raises:
+            aiohttp.ClientError: If there is a network or API request failure.
+            aiohttp.ContentTypeError: If the response is not valid JSON.
+
+        Example:
+            ```python
+            data = await hub.get_energy_consumption(device, ConsumptionPeriodType.DAILY, "30032025", "31032025")
+            ```
+            Output: `{"30032025": 2.35, "31032025": 3.64}` (where 2.35 and 3.64 are the energy
+            consumption in kWh).
+        """
+
+        if not to_date:
+            to_date: str = from_date
+        url = constants.energyConsumptionUrl.format(deviceId=device.id, periodType=period_type.value, fromDate=from_date, toDate=to_date)
+        response = await self.http.get(url, headers=self.__build_headers__())
+        resp = await response.json()
+        _key = period_type.response_key()
+        return {_d[_key]: _d["power"] for _d in resp}
