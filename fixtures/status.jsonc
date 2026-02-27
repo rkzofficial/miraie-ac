@@ -20,6 +20,7 @@
     "acem": "off", // on or off
     "acmd": "auto", // dry, fan, auto, cool, heat
     "acdc": "on", // on or off
+    "bzr": "on", // on or off
     "acvs": 1, // 0, 1, 2, 3, 4, 5
     "acsp": "none",
     "actmp": "25.0", // 16.0 - 30.0

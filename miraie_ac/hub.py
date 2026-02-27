@@ -8,7 +8,7 @@ from .topic import MirAIeTopic
 from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
 from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode, \
-    ConsumptionPeriodType
+    ConsumptionPeriodType, BuzzerMode
 from .utils import is_valid_email, toFloat
 from .logger import LOGGER
 
@@ -207,6 +207,7 @@ class MirAIeHub:
                     v_swing_mode=SwingMode.AUTO,
                     h_swing_mode=SwingMode.AUTO,
                     display_mode=DisplayMode.ON,
+                    buzzer_mode=BuzzerMode.ON,
                     hvac_mode=HVACMode.AUTO,
                     preset_mode=PresetMode.NONE,
                     converti_mode=ConvertiMode.OFF,
@@ -221,6 +222,7 @@ class MirAIeHub:
                     v_swing_mode=SwingMode(status["acvs"]),
                     h_swing_mode=SwingMode(status["achs"]),
                     display_mode=DisplayMode(status["acdc"]),
+                    buzzer_mode=BuzzerMode(status["bzr"]),
                     hvac_mode=HVACMode(status["acmd"]),
                     preset_mode=PresetMode.BOOST
                     if status["acpm"] == "on"
