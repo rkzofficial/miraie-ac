@@ -8,6 +8,13 @@ class DisplayMode(Enum):
     OFF = "off"
 
 
+class BuzzerMode(Enum):
+    """Enum for Buzzer mode."""
+
+    ON = "on"
+    OFF = "off"
+
+
 class FanMode(Enum):
     """Enum for fan mode."""
 

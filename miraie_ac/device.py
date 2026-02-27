@@ -1,6 +1,15 @@
 from typing import Callable
 from .broker import MirAIeBroker
-from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
+from .enums import (
+    PowerMode,
+    FanMode,
+    SwingMode,
+    DisplayMode,
+    HVACMode,
+    PresetMode,
+    ConvertiMode,
+    BuzzerMode,
+)
 from .utils import toFloat
 from .logger import LOGGER
 
@@ -16,6 +25,7 @@ class DeviceStatus:
         v_swing_mode: SwingMode,
         h_swing_mode: SwingMode,
         display_mode: DisplayMode,
+        buzzer_mode: BuzzerMode,
         hvac_mode: HVACMode,
         preset_mode: PresetMode,
         converti_mode: ConvertiMode,
@@ -28,6 +38,7 @@ class DeviceStatus:
         self.v_swing_mode = v_swing_mode
         self.h_swing_mode = h_swing_mode
         self.display_mode = display_mode
+        self.buzzer_mode = buzzer_mode
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
         self.converti_mode = converti_mode
@@ -43,6 +54,7 @@ class DeviceStatus:
             f"Vertical swing mode: {self.v_swing_mode}\n" +
             f"Horizontal swing mode: {self.h_swing_mode}\n" +
             f"Display mode: {self.display_mode}\n" +
+            f"Buzzer mode: {self.buzzer_mode}\n" +
             f"Hvac mode: {self.hvac_mode}\n" +
             f"Preset mode: {self.preset_mode}\n" +
             f"Converti mode: {self.converti_mode}\n"
@@ -154,6 +166,7 @@ class Device:
             v_swing_mode=SwingMode(status["acvs"]),
             h_swing_mode=SwingMode(status["achs"]),
             display_mode=DisplayMode(status["acdc"]),
+            buzzer_mode=BuzzerMode(status["bzr"]),
             hvac_mode=HVACMode(status["acmd"]),
             preset_mode=PresetMode.BOOST
             if status["acpm"] == "on"
@@ -204,6 +217,9 @@ class Device:
         
     async def set_display_mode(self, mode: DisplayMode):
         await self.broker.set_display_mode(self.control_topic, mode)
-    
+
+    async def set_buzzer_mode(self, mode: BuzzerMode):
+        await self.broker.set_buzzer_mode(self.control_topic, mode)
+
     async def set_converti_mode(self, mode: ConvertiMode):
         await self.broker.set_converti_mode(self.control_topic, mode)

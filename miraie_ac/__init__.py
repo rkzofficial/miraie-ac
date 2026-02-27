@@ -4,6 +4,7 @@ from miraie_ac.device import Device
 from miraie_ac.broker import MirAIeBroker
 from miraie_ac.enums import (
     DisplayMode,
+    BuzzerMode,
     FanMode,
     HVACMode,
     PowerMode,

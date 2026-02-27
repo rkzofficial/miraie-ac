@@ -4,7 +4,7 @@ import ssl
 import certifi
 import random
 import json
-from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode
+from .enums import PowerMode, HVACMode, FanMode, PresetMode, SwingMode, DisplayMode, ConvertiMode, BuzzerMode
 from .user import User
 from .logger import LOGGER
 
@@ -176,7 +176,18 @@ class MirAIeBroker:
         await self.client.publish(
             topic, json.dumps(self.build_display_mode_payload(mode))
         )
-        
+
+    # Buzzer Mode
+    def build_buzzer_mode_payload(self, mode: BuzzerMode):
+        payload = self.build_base_payload()
+        payload["bzr"] = str(mode.value)
+        return payload
+
+    async def set_buzzer_mode(self, topic: str, mode: BuzzerMode):
+        await self.client.publish(
+            topic, json.dumps(self.build_buzzer_mode_payload(mode))
+        )
+
     # Converti Mode
     def build_converti_mode_payload(self, mode: ConvertiMode):
         payload = self.build_base_payload()
