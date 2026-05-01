@@ -189,3 +189,24 @@ class MirAIeBroker:
         await self.client.publish(
             topic, json.dumps(self.build_converti_mode_payload(mode))
         )
+
+    # Timer
+    # `actm` has asymmetric encoding:
+    #   * On the WIRE (control publish): two-element array of relative
+    #     durations in seconds — how many seconds from now the timer
+    #     should fire. -1 means "no timer for this slot" (clears any
+    #     existing timer, does NOT preserve).
+    #   * In STATUS replies: same field name, but the broker has
+    #     already added its current `ts` to produce absolute Unix
+    #     timestamps in seconds. -1 means "no timer set".
+    # Slot order is [off_timer, on_timer] in both directions. Both
+    # slots are sent on every update — to preserve an existing timer
+    # in the other slot, the caller must pass its remaining seconds.
+    def build_timer_payload(self, off_in: int, on_in: int):
+        payload = self.build_base_payload()
+        payload["actm"] = [off_in, on_in]
+        return payload
+
+    async def set_timer(self, topic: str, off_in: int, on_in: int):
+        body = json.dumps(self.build_timer_payload(off_in, on_in))
+        await self.client.publish(topic, body)

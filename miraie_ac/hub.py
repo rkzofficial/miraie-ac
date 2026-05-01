@@ -212,6 +212,7 @@ class MirAIeHub:
                     converti_mode=ConvertiMode.OFF,
                 )
             else:
+                actm = status.get("actm") or [-1, -1]
                 status_obj = DeviceStatus(
                     is_online=status["onlineStatus"] == "true",
                     temperature=toFloat(status["actmp"]),
@@ -228,6 +229,8 @@ class MirAIeHub:
                     if status["acem"] == "on"
                     else PresetMode.NONE,
                     converti_mode=ConvertiMode(status.get("cnv", 0)),
+                    off_timer_at=actm[0] if len(actm) > 0 else -1,
+                    on_timer_at=actm[1] if len(actm) > 1 else -1,
                 )
 
             device.set_status(status_obj)

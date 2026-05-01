@@ -1,3 +1,4 @@
+import time
 from typing import Callable
 from .broker import MirAIeBroker
 from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
@@ -19,6 +20,8 @@ class DeviceStatus:
         hvac_mode: HVACMode,
         preset_mode: PresetMode,
         converti_mode: ConvertiMode,
+        off_timer_at: int = -1,
+        on_timer_at: int = -1,
     ):
         self.is_online = is_online
         self.temperature = temperature
@@ -31,8 +34,10 @@ class DeviceStatus:
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
         self.converti_mode = converti_mode
+        self.off_timer_at = off_timer_at
+        self.on_timer_at = on_timer_at
         LOGGER.debug(f"Device status: {self.__str__()}")
-    
+
     def __str__(self):
         return (
             f"Is online? - {self.is_online}\n" +
@@ -45,7 +50,9 @@ class DeviceStatus:
             f"Display mode: {self.display_mode}\n" +
             f"Hvac mode: {self.hvac_mode}\n" +
             f"Preset mode: {self.preset_mode}\n" +
-            f"Converti mode: {self.converti_mode}\n"
+            f"Converti mode: {self.converti_mode}\n" +
+            f"Off timer at: {self.off_timer_at}\n" +
+            f"On timer at: {self.on_timer_at}\n"
         )
         
     def __repr__(self):
@@ -145,6 +152,7 @@ class Device:
 
     def status_handler(self, status: any):
         LOGGER.debug(f"Raw device status: {status}")
+        actm = status.get("actm") or [-1, -1]
         status_obj = DeviceStatus(
             is_online=self.status.is_online,
             temperature=toFloat(status["actmp"]),
@@ -163,6 +171,8 @@ class Device:
             if status["acec"] == "on"
             else PresetMode.NONE,
             converti_mode=ConvertiMode(status.get("cnv", 0)),
+            off_timer_at=actm[0] if len(actm) > 0 else -1,
+            on_timer_at=actm[1] if len(actm) > 1 else -1,
         )
 
         self.set_status(status_obj)
@@ -207,3 +217,52 @@ class Device:
     
     async def set_converti_mode(self, mode: ConvertiMode):
         await self.broker.set_converti_mode(self.control_topic, mode)
+
+    def _remaining(self, epoch: int) -> int:
+        """Return seconds remaining until `epoch`, or -1 if unset/expired.
+
+        Status fields hold absolute epochs; the wire format wants relative
+        seconds. To leave the other slot untouched while modifying one, we
+        re-send the other slot's remaining time as a fresh duration.
+        """
+        if epoch <= 0:
+            return -1
+        remaining = epoch - int(time.time())
+        return remaining if remaining > 0 else -1
+
+    async def set_off_timer(self, seconds_from_now: int):
+        """Schedule the AC to turn off after `seconds_from_now` seconds.
+
+        Preserves any existing on-timer. The timer fires on the AC itself,
+        so it survives loss of internet or controller (Home Assistant)
+        connectivity once published.
+        """
+        await self.broker.set_timer(
+            self.control_topic,
+            seconds_from_now,
+            self._remaining(self.status.on_timer_at),
+        )
+
+    async def cancel_off_timer(self):
+        await self.broker.set_timer(
+            self.control_topic, -1, self._remaining(self.status.on_timer_at)
+        )
+
+    async def set_on_timer(self, seconds_from_now: int):
+        """Schedule the AC to turn on after `seconds_from_now` seconds.
+
+        Preserves any existing off-timer.
+        """
+        await self.broker.set_timer(
+            self.control_topic,
+            self._remaining(self.status.off_timer_at),
+            seconds_from_now,
+        )
+
+    async def cancel_on_timer(self):
+        await self.broker.set_timer(
+            self.control_topic, self._remaining(self.status.off_timer_at), -1
+        )
+
+    async def clear_timers(self):
+        await self.broker.set_timer(self.control_topic, -1, -1)
