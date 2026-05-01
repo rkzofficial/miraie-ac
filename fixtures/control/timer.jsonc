@@ -1,0 +1,23 @@
+// AC timer (sleep / scheduled on / scheduled off)
+//
+// `actm` has ASYMMETRIC encoding between the wire and status:
+//   * On the wire (control publish): two-element array of RELATIVE
+//     durations in seconds — how many seconds from now the timer
+//     should fire. -1 means "no timer for this slot" (CLEARS any
+//     existing timer in that slot, does NOT preserve it).
+//   * In status replies: same field, but the broker has already
+//     added its current `ts` to produce absolute Unix timestamps
+//     in seconds.
+//
+// Slot order is [off_timer, on_timer] in both directions. Both
+// slots are sent on every update — to preserve an existing timer
+// in the other slot while modifying one, the caller must compute
+// its remaining seconds-until-fire and re-send that.
+//
+// Example: schedule the AC to turn off in 1 hour, no on-timer.
+{
+    "actm": [3600, -1],
+    "ki": 1,
+    "cnt": "an",
+    "sid": "0"
+}
