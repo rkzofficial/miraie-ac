@@ -12,6 +12,7 @@ aiomqtt = "^2.0.1"
 aiohttp= "*"
 asyncio = "^3.4.3"
 certifi = "*"
+python-dateutil = "^2.9.0"
 
 
 [build-system]
