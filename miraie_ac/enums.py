@@ -62,6 +62,8 @@ class ConvertiMode(Enum):
     C90 = 90
     C80 = 80
     C70 = 70
+    C60 = 60
+    C50 = 50
     C55 = 55
     C40 = 40
     # Not supported
