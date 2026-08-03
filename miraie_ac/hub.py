@@ -119,7 +119,7 @@ class MirAIeHub:
             LOGGER.debug(f'reason: {response.reason}')
             LOGGER.debug(f'content_type: {response.content_type}')
             LOGGER.debug(f'text response: {await response.text()}')
-            raise Exception("Unable to fetch device details failed")
+            raise Exception("Unable to fetch device details")
             
 
     # Process the home details
@@ -146,24 +146,27 @@ class MirAIeHub:
                 )
                 self.topics_map[item.id] = topic
 
-        device_ids = ",".join(list(map(lambda device: device.id, devices)))
-        device_details = await self._get_device_details(device_ids)
+        if devices:
+            device_ids = ",".join(list(map(lambda device: device.id, devices)))
+            device_details = await self._get_device_details(device_ids)
 
-        for dd in device_details:
-            device = next(d for d in devices if d.id == dd["deviceId"])
+            for dd in device_details:
+                device = next(d for d in devices if d.id == dd["deviceId"])
 
-            details = DeviceDetails(
-                model_name=dd["modelName"],
-                mac_address=dd["macAddress"],
-                category=dd["category"],
-                brand=dd["brand"],
-                firmware_version=dd["firmwareVersion"],
-                serial_number=dd["serialNumber"],
-                model_number=dd["modelNumber"],
-                product_serial_number=dd["productSerialNumber"],
-            )
+                details = DeviceDetails(
+                    model_name=dd["modelName"],
+                    mac_address=dd["macAddress"],
+                    category=dd["category"],
+                    brand=dd["brand"],
+                    firmware_version=dd["firmwareVersion"],
+                    serial_number=dd["serialNumber"],
+                    model_number=dd["modelNumber"],
+                    product_serial_number=dd["productSerialNumber"],
+                )
 
-            device.set_details(details)
+                device.set_details(details)
+        else:
+            LOGGER.warning("No devices found on current account")
 
         self.home = Home(id=json_data["homeId"], devices=devices)
         return self.home
