@@ -1,5 +1,8 @@
 import aiohttp
 import asyncio
+from datetime import date, timedelta
+
+from dateutil.relativedelta import relativedelta
 
 from . import constants
 from .broker import MirAIeBroker
@@ -273,5 +276,92 @@ class MirAIeHub:
         url = constants.energyConsumptionUrl.format(deviceId=device.id, periodType=period_type.value, fromDate=from_date, toDate=to_date)
         response = await self.http.get(url, headers=self.__build_headers__())
         resp = await response.json()
+        if isinstance(resp, dict) and "message" in resp:
+            return resp
         _key = period_type.response_key()
         return {_d[_key]: _d["power"] for _d in resp}
+
+    async def get_energy_consumption_full(
+        self,
+        device: Device,
+        period_type: ConsumptionPeriodType,
+        from_date: date,
+        to_date: date,
+    ) -> dict:
+        """
+        Fetch full-range energy consumption history by chunking requests to satisfy API limits.
+
+        Supported period types:
+        - DAILY: dates formatted as DDMMYYYY
+        - MONTHLY: dates formatted as MMYYYY (month boundaries aligned to the first of month)
+        - WEEKLY: not supported and raises NotImplementedError
+
+        The MirAIe API limits each request to a maximum of six months. This method splits the
+        requested range into compliant chunks, calls `get_energy_consumption` for each chunk,
+        and merges the results into a single dict. If a chunk response is empty or contains a
+        `"message"` error from the API, it is skipped.
+
+        Returns:
+            dict: Mapping of date keys to energy consumption values (kWh). Keys are formatted
+                  based on the period type.
+
+        Example:
+            ```python
+            data = await hub.get_energy_consumption_full(
+                device, ConsumptionPeriodType.DAILY, date(2025, 10, 1), date.today()
+            )
+            ```
+        """
+        if period_type == ConsumptionPeriodType.WEEKLY:
+            raise NotImplementedError("Weekly period not supported — use DAILY or MONTHLY")
+
+        results: dict[str, float] = {}
+
+        if period_type == ConsumptionPeriodType.MONTHLY:
+            chunk_start = date(from_date.year, from_date.month, 1)
+            end_month = date(to_date.year, to_date.month, 1)
+
+            while chunk_start <= end_month:
+                chunk_end = min(end_month, chunk_start + relativedelta(months=5))
+                chunk = await self.get_energy_consumption(
+                    device,
+                    period_type,
+                    chunk_start.strftime("%m%Y"),
+                    chunk_end.strftime("%m%Y"),
+                )
+
+                if isinstance(chunk, dict) and "message" in chunk:
+                    chunk_start = chunk_end + relativedelta(months=1)
+                    continue
+                if chunk == [] or chunk == {}:
+                    chunk_start = chunk_end + relativedelta(months=1)
+                    continue
+
+                results.update(chunk)
+                chunk_start = chunk_end + relativedelta(months=1)
+
+            return results
+
+        chunk_start = from_date
+        while chunk_start <= to_date:
+            chunk_end = min(
+                to_date, chunk_start + relativedelta(months=6) - timedelta(days=1)
+            )
+            chunk = await self.get_energy_consumption(
+                device,
+                period_type,
+                chunk_start.strftime("%d%m%Y"),
+                chunk_end.strftime("%d%m%Y"),
+            )
+
+            if isinstance(chunk, dict) and "message" in chunk:
+                chunk_start = chunk_end + timedelta(days=1)
+                continue
+            if chunk == [] or chunk == {}:
+                chunk_start = chunk_end + timedelta(days=1)
+                continue
+
+            results.update(chunk)
+            chunk_start = chunk_end + timedelta(days=1)
+
+        return results
